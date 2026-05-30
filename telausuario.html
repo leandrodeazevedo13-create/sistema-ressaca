@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Minha Caixa Postal - Morador</title>
+</head>
+<body class="bg-gray-900 min-h-screen p-6 text-white font-sans">
+
+    <div class="max-w-3xl mx-auto">
+        <header class="mb-8 border-b border-white/10 pb-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold">Olá, Morador! 👋</h1>
+                <p class="text-gray-400 text-sm">Bem-vindo à sua Central de Encomendas</p>
+            </div>
+            <div class="bg-blue-600 px-4 py-2 rounded-lg font-bold">UNID 103</div>
+        </header>
+
+        <section class="mb-10">
+            <h2 class="text-xs font-bold mb-4 text-gray-400 uppercase tracking-widest">Minhas Encomendas</h2>
+            <div class="bg-gray-800 p-6 rounded-2xl border border-white/5 space-y-4">
+                
+                <div class="flex items-center gap-4 bg-gray-900 p-4 rounded-xl border border-white/5">
+                    <img src="https://via.placeholder.com/100" alt="Foto da Encomenda" class="w-20 h-20 rounded-lg object-cover border border-white/10">
+                    
+                    <div class="flex-1">
+                        <p class="font-bold">📦 ML - Código: PCP-88</p>
+                        <p class="text-xs text-blue-400 font-semibold mt-0.5">Logradouro: Rua Pescada</p>
+                        <p class="text-[10px] text-gray-500 mt-1">Chegou em: 29/05/2026</p>
+                    </div>
+                    
+                    <span class="text-green-400 font-bold text-sm bg-green-900/30 px-3 py-1 rounded-full">Disponível</span>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="bg-gray-800 p-6 rounded-2xl border border-white/5 shadow-xl">
+            <h2 class="text-lg font-bold mb-4 flex items-center gap-2">💬 Falar com a Portaria</h2>
+            <div id="chatBox" class="h-40 overflow-y-auto mb-4 p-4 bg-gray-900 rounded-xl text-sm space-y-3">
+                <div class="text-gray-400">Portaria: Temos uma encomenda para você!</div>
+            </div>
+            <div class="flex gap-2">
+                <input type="text" id="msgInput" placeholder="Escreva sua mensagem..." class="flex-1 bg-gray-900 p-3 rounded-xl outline-none border border-white/10 text-sm">
+                <button onclick="enviarMensagem()" class="bg-green-600 px-6 rounded-xl font-bold hover:bg-green-700 transition">Enviar</button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        function enviarMensagem() {
+            const input = document.getElementById('msgInput');
+            const chat = document.getElementById('chatBox');
+            if (input.value.trim() !== "") {
+                chat.innerHTML += `<div class="text-right text-blue-300">Morador: ${input.value}</div>`;
+                input.value = "";
+                chat.scrollTop = chat.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Dashboard Administrador - Ressaca</title>
+</head>
+<body class="bg-gray-950 min-h-screen text-white p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="flex justify-between items-center mb-10">
+            <div>
+                <h1 class="text-3xl font-bold uppercase tracking-widest text-amber-500">Painel do Administrador</h1>
+                <p class="text-gray-400">Monitoramento em tempo real - 29/05/2026</p>
+            </div>
+            <div class="text-right">
+                <span class="bg-red-900 text-red-200 px-4 py-1 rounded-full text-xs font-bold animate-pulse">● SISTEMA ONLINE</span>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+            <div class="bg-gray-900 p-6 rounded-2xl border border-white/10">
+                <p class="text-gray-400 text-sm">Entregas Hoje</p>
+                <h2 class="text-4xl font-bold">142</h2>
+            </div>
+            <div class="bg-gray-900 p-6 rounded-2xl border border-white/10">
+                <p class="text-gray-400 text-sm">Pendentes na Portaria</p>
+                <h2 class="text-4xl font-bold text-amber-500">28</h2>
+            </div>
+            <div class="bg-gray-900 p-6 rounded-2xl border border-white/10">
+                <p class="text-gray-400 text-sm">Moradores Ativos</p>
+                <h2 class="text-4xl font-bold">450</h2>
+            </div>
+            <div class="bg-gray-900 p-6 rounded-2xl border border-white/10">
+                <p class="text-gray-400 text-sm">Uso do Chat (24h)</p>
+                <h2 class="text-4xl font-bold">89</h2>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2 bg-gray-900 p-6 rounded-2xl border border-white/10">
+                <h2 class="font-bold mb-6">Logs de Ações (Audit Trail)</h2>
+                <div class="space-y-4 text-sm text-gray-300">
+                    <div class="flex justify-between border-b border-white/5 pb-2"><span>Porteiro João realizou entrega (Unid 103)</span><span class="text-gray-500">18:45</span></div>
+                    <div class="flex justify-between border-b border-white/5 pb-2"><span>Morador 202 alterou perfil</span><span class="text-gray-500">18:30</span></div>
+                    <div class="flex justify-between border-b border-white/5 pb-2"><span>Nova encomenda registrada (ML - Unid 401)</span><span class="text-gray-500">18:15</span></div>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 p-6 rounded-2xl border border-white/10">
+                <h2 class="font-bold mb-6">Controles do Administrador</h2>
+                <div class="space-y-3">
+                    <button class="w-full text-left p-4 bg-red-600/20 hover:bg-red-600 rounded-xl transition">⚠️ Resetar Senhas de Acesso</button>
+                    <button class="w-full text-left p-4 bg-blue-600/20 hover:bg-blue-600 rounded-xl transition">📊 Exportar Relatório Mensal</button>
+                    <button class="w-full text-left p-4 bg-emerald-600/20 hover:bg-emerald-600 rounded-xl transition">📡 Monitorar Portaria (Live)</button>
+                    <button class="w-full text-left p-4 bg-gray-800 hover:bg-gray-700 rounded-xl transition">⚙️ Configurações Gerais</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

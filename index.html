@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Acesso - Associação Ressaca</title>
+</head>
+<body class="bg-[#A04000] h-screen flex items-center justify-center">
+
+    <div class="bg-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-sm border border-white/10 text-center">
+        <h1 class="text-2xl font-bold text-white mb-6">LOGIN PORTARIA</h1>
+        <input type="password" id="senha" placeholder="Digite a senha..." 
+               class="w-full bg-gray-900 p-4 rounded-xl text-white outline-none mb-6 border border-white/10 focus:border-blue-500">
+        <button onclick="verificar()" class="w-full bg-blue-600 py-4 rounded-xl font-bold text-white hover:bg-blue-700 transition">
+            ENTRAR NO SISTEMA
+        </button>
+    </div>
+
+    <script>
+        function verificar() {
+            const senha = document.getElementById('senha').value;
+            // Altere '1234' pela senha que desejar
+            if(senha === '1234') {
+                window.location.href = 'painel.html'; 
+            } else {
+                alert('Senha incorreta!');
+            }
+        }
+    </script>
+</body>
+</html>
