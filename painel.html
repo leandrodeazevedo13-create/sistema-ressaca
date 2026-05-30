@@ -86,54 +86,35 @@
     </div>
 
     <script>
-        const supabase = supabase.createClient('https://oreltmkohfzptelcqmau.supabase.co', 'sb_publishable_IwPZ6Y8Mr6RnwQLE24oY1Q_EiIpxUEQ');
+    const supabase = supabase.createClient(
+        'https://oreltmkohfzptelcqmau.supabase.co', 
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yZWx0bWtvaGZ6cHRlbGNxbWF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTc0NTMsImV4cCI6MjA5NTY3MzQ1M30.cZUui1XdJ1m1qwivtDiR_3-byxnLU5ZwHffSv2tyrCQ'
+    );
 
-        // Relógio
-        setInterval(() => {
-            const agora = new Date();
-            document.getElementById('relogio').innerText = agora.toLocaleTimeString();
-            document.getElementById('data').innerText = agora.toLocaleDateString();
-        }, 1000);
-
-        // Lógica Supabase
-        async function carregarEncomendas() {
-            const { data } = await supabase.from('encomendas').select('*').eq('status', 'pendente');
-            const corpo = document.getElementById('tabelaEncomendas');
-            corpo.innerHTML = '';
-            if(data) {
-                data.forEach(item => {
-                    corpo.innerHTML += `<tr class="text-xs">
-                        <td class="py-3 font-bold">${item.unidade}</td>
-                        <td class="py-3">${item.logradouro}</td>
-                        <td class="py-3 text-yellow-400">📦 ${item.empresa}</td>
-                        <td class="py-3 font-mono">${item.codigo}</td>
-                        <td class="py-3"><button onclick="entregar('${item.id}')" class="bg-green-600 px-3 py-1 rounded-lg">Entregar</button></td>
-                    </tr>`;
-                });
-            }
+    async function carregarEncomendas() {
+        // Removemos o .eq('status', 'pendente') para buscar tudo
+        const { data, error } = await supabase.from('encomendas').select('*');
+        if (error) {
+            console.error("Erro do Supabase:", error.message);
+            return;
         }
 
-        async function salvarEncomenda() {
-            await supabase.from('encomendas').insert([{
-                unidade: document.getElementById('in-unid').value,
-                logradouro: document.getElementById('in-log').value,
-                empresa: document.getElementById('in-emp').value,
-                codigo: document.getElementById('in-cod').value,
-                status: 'pendente'
-            }]);
-            document.getElementById('modal').classList.add('hidden');
-            carregarEncomendas();
+        const corpo = document.getElementById('tabelaEncomendas');
+        corpo.innerHTML = '';
+        if(data) {
+            data.forEach(item => {
+                corpo.innerHTML += `<tr class="text-xs">
+                    <td class="py-3 font-bold">${item.unidade}</td>
+                    <td class="py-3">${item.logradouro}</td>
+                    <td class="py-3 text-yellow-400">📦 ${item.empresa}</td>
+                    <td class="py-3 font-mono">${item.codigo}</td>
+                    <td class="py-3"><button onclick="entregar('${item.id}')" class="bg-green-600 px-3 py-1 rounded-lg">Entregar</button></td>
+                </tr>`;
+            });
         }
-
-        async function entregar(id) {
-            await supabase.from('encomendas').update({ status: 'entregue' }).eq('id', id);
-            carregarEncomendas();
-        }
-
-        function mudarCor(c) { document.getElementById('pageBody').style.backgroundColor = c; }
-        function togglePlay() { const icon = document.getElementById('playIcon'); icon.innerText = (icon.innerText === '▶' ? '⏸' : '▶'); }
-
-        carregarEncomendas();
-    </script>
+    }
+    // ... manter o restante das funções salvarEncomenda e entregar ...
+    carregarEncomendas();
+</script>
 </body>
 </html>
