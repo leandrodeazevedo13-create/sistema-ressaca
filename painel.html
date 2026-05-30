@@ -2,101 +2,70 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <title>Painel Ressaca - Portaria</title>
-    <style>
-        .theme-light { background-color: #ffffff !important; color: #000000 !important; }
-        .theme-light .bg-gray-800 { background-color: #e5e7eb !important; color: #000000 !important; }
-        .theme-light .text-white { color: #000000 !important; }
-        .theme-light .text-gray-400 { color: #4b5563 !important; }
-        .theme-light .bg-gray-900 { background-color: #d1d5db !important; }
-    </style>
+    <title>Painel Ressaca</title>
 </head>
-<body id="pageBody" class="bg-[#A04000] min-h-screen p-8 text-white transition-colors duration-300">
+<body class="bg-[#A04000] text-white min-h-screen">
 
-    <div id="modal" class="hidden fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-4">
-        <div class="bg-gray-900 p-8 rounded-2xl w-full max-w-sm border border-white/10">
-            <h2 class="text-xl font-bold mb-4">Nova Encomenda</h2>
-            <input type="text" id="in-unid" placeholder="Unidade" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none">
-            <input type="text" id="in-log" placeholder="Logradouro" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none">
-            <input type="text" id="in-emp" placeholder="Empresa" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none">
-            <input type="text" id="in-cod" placeholder="Código" class="w-full p-3 mb-4 bg-gray-800 rounded-lg outline-none">
-            <div class="flex gap-2">
-                <button onclick="salvarEncomenda()" class="flex-1 bg-green-600 p-3 rounded-lg font-bold">Salvar</button>
-                <button onclick="document.getElementById('modal').classList.add('hidden')" class="flex-1 bg-red-600 p-3 rounded-lg font-bold">Cancelar</button>
+    <div class="max-w-6xl mx-auto p-6">
+        <header class="mb-8 text-center">
+            <h1 class="text-2xl font-bold uppercase tracking-widest">ASSOCIAÇÃO MORADORES BAIRRO RESSACA</h1>
+        </header>
+
+        <div class="flex gap-6">
+            <div class="w-1/3 flex flex-col gap-4">
+                <button onclick="document.getElementById('modal').classList.remove('hidden')" class="bg-blue-600 p-4 rounded-xl font-bold hover:bg-blue-700">NOVA ENCOMENDA</button>
+            </div>
+
+            <div class="w-2/3 bg-gray-800 p-6 rounded-2xl shadow-xl">
+                <table class="w-full text-left">
+                    <thead class="text-gray-400 text-xs uppercase border-b border-white/10">
+                        <tr><th class="pb-3">Unid</th><th class="pb-3">Empresa</th><th class="pb-3">Código</th><th class="pb-3">Ação</th></tr>
+                    </thead>
+                    <tbody id="tabelaEncomendas" class="divide-y divide-white/10"></tbody>
+                </table>
             </div>
         </div>
     </div>
 
-    <div class="max-w-6xl mx-auto flex gap-6">
-        <div class="w-1/3 flex flex-col gap-4">
-            <button onclick="document.getElementById('modal').classList.remove('hidden')" class="bg-blue-600 p-6 rounded-2xl font-bold hover:bg-blue-700 transition">+ NOVA ENCOMENDA</button>
-        </div>
-
-        <div class="w-2/3 bg-gray-800 p-6 rounded-2xl shadow-xl">
-            <table class="w-full text-left">
-                <thead class="text-gray-400 text-xs uppercase border-b border-white/10">
-                    <tr><th class="pb-3">Unid</th><th class="pb-3">Logradouro</th><th class="pb-3">Empresa</th><th class="pb-3">Cod</th><th class="pb-3">Ação</th></tr>
-                </thead>
-                <tbody id="tabelaEncomendas" class="divide-y divide-white/10"></tbody>
-            </table>
+    <div id="modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div class="bg-gray-900 p-6 rounded-2xl w-80">
+            <input type="text" id="in-unid" placeholder="Unidade" class="w-full p-2 mb-2 bg-gray-800 rounded">
+            <input type="text" id="in-emp" placeholder="Empresa" class="w-full p-2 mb-2 bg-gray-800 rounded">
+            <input type="text" id="in-cod" placeholder="Código" class="w-full p-2 mb-4 bg-gray-800 rounded">
+            <button onclick="salvar()" class="w-full bg-green-600 p-2 rounded">Salvar</button>
         </div>
     </div>
 
     <script>
-        const supabaseUrl = 'https://oreltmkohfzptelcqmau.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yZWx0bWtvaGZ6cHRlbGNxbWF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTc0NTMsImV4cCI6MjA5NTY3MzQ1M30.cZUui1XdJ1m1qwivtDiR_3-byxnLU5ZwHffSv2tyrCQ';
-        
-        // Inicialização segura
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        // Inicialização Única
+        const supabase = supabase.createClient('https://oreltmkohfzptelcqmau.supabase.co', 'SUA_CHAVE_ANON_AQUI');
 
-        async function carregarEncomendas() {
-            const { data, error } = await supabase.from('encomendas').select('*');
-            if (error) { console.error("Erro ao carregar:", error.message); return; }
-
-            const corpo = document.getElementById('tabelaEncomendas');
-            corpo.innerHTML = '';
-            data?.forEach(item => {
-                corpo.innerHTML += `
-                    <tr class="text-xs">
-                        <td class="py-3 font-bold">${item.unidade}</td>
-                        <td class="py-3">${item.logradouro}</td>
-                        <td class="py-3 text-yellow-400">📦 ${item.empresa}</td>
-                        <td class="py-3 font-mono">${item.codigo}</td>
-                        <td class="py-3"><button onclick="entregar('${item.id}')" class="bg-green-600 px-3 py-1 rounded-lg">Entregar</button></td>
-                    </tr>`;
-            });
+        async function carregar() {
+            const { data } = await supabase.from('encomendas').select('*');
+            const tbody = document.getElementById('tabelaEncomendas');
+            tbody.innerHTML = data?.map(i => `
+                <tr class="text-xs">
+                    <td class="py-3">${i.unidade}</td>
+                    <td class="py-3">${i.empresa}</td>
+                    <td class="py-3">${i.codigo}</td>
+                    <td class="py-3"><button onclick="entregar('${i.id}')" class="bg-green-600 px-2 rounded">OK</button></td>
+                </tr>`).join('') || '';
         }
 
-        async function salvarEncomenda() {
-            const { error } = await supabase.from('encomendas').insert([{
+        async function salvar() {
+            await supabase.from('encomendas').insert([{
                 unidade: document.getElementById('in-unid').value,
-                logradouro: document.getElementById('in-log').value,
                 empresa: document.getElementById('in-emp').value,
-                codigo: document.getElementById('in-cod').value,
-                status: 'pendente'
+                codigo: document.getElementById('in-cod').value
             }]);
-
-            if (error) {
-                alert("Erro ao salvar: " + error.message);
-            } else {
-                document.getElementById('modal').classList.add('hidden');
-                // Limpa os campos após salvar
-                document.getElementById('in-unid').value = '';
-                document.getElementById('in-log').value = '';
-                document.getElementById('in-emp').value = '';
-                document.getElementById('in-cod').value = '';
-                carregarEncomendas();
-            }
+            document.getElementById('modal').classList.add('hidden');
+            carregar();
         }
 
-        async function entregar(id) {
-            await supabase.from('encomendas').update({ status: 'entregue' }).eq('id', id);
-            carregarEncomendas();
-        }
-
-        carregarEncomendas();
+        carregar();
     </script>
 </body>
 </html>
