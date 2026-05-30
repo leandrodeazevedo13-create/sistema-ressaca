@@ -134,6 +134,16 @@
         function togglePlay() { const icon = document.getElementById('playIcon'); icon.innerText = (icon.innerText === '▶' ? '⏸' : '▶'); }
 
         carregarEncomendas();
+    // Teste de conexão imediato
+supabase.from('encomendas').select('*').limit(1)
+    .then(res => {
+        if (res.error) {
+            console.error("ERRO NO SUPABASE:", res.error);
+            alert("Erro ao conectar no banco! Veja o Console (F12).");
+        } else {
+            console.log("SUCESSO! Conectado ao banco.", res.data);
+        }
+    });
     </script>
 </body>
 </html>
