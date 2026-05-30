@@ -86,34 +86,42 @@
     </div>
 
     <script>
-    const supabase = supabase.createClient(
-        'https://oreltmkohfzptelcqmau.supabase.co', 
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yZWx0bWtvaGZ6cHRlbGNxbWF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTc0NTMsImV4cCI6MjA5NTY3MzQ1M30.cZUui1XdJ1m1qwivtDiR_3-byxnLU5ZwHffSv2tyrCQ'
-    );
+    // Inicialização do cliente Supabase (apenas uma vez)
+    const supabaseUrl = 'https://oreltmkohfzptelcqmau.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yZWx0bWtvaGZ6cHRlbGNxbWF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTc0NTMsImV4cCI6MjA5NTY3MzQ1M30.cZUui1XdJ1m1qwivtDiR_3-byxnLU5ZwHffSv2tyrCQ';
+    
+    // Verifica se já não existe uma instância antes de criar
+    window.supabaseClient = window.supabaseClient || supabase.createClient(supabaseUrl, supabaseKey);
 
     async function carregarEncomendas() {
-        // Removemos o .eq('status', 'pendente') para buscar tudo
-        const { data, error } = await supabase.from('encomendas').select('*');
+        console.log("Tentando buscar encomendas...");
+        // Busca todos os registros sem filtro para garantir exibição
+        const { data, error } = await window.supabaseClient.from('encomendas').select('*');
+        
         if (error) {
-            console.error("Erro do Supabase:", error.message);
+            console.error("Erro ao buscar encomendas:", error.message);
             return;
         }
 
+        console.log("Dados encontrados:", data);
         const corpo = document.getElementById('tabelaEncomendas');
         corpo.innerHTML = '';
-        if(data) {
+        
+        if (data && data.length > 0) {
             data.forEach(item => {
-                corpo.innerHTML += `<tr class="text-xs">
-                    <td class="py-3 font-bold">${item.unidade}</td>
-                    <td class="py-3">${item.logradouro}</td>
-                    <td class="py-3 text-yellow-400">📦 ${item.empresa}</td>
-                    <td class="py-3 font-mono">${item.codigo}</td>
-                    <td class="py-3"><button onclick="entregar('${item.id}')" class="bg-green-600 px-3 py-1 rounded-lg">Entregar</button></td>
-                </tr>`;
+                corpo.innerHTML += `
+                    <tr class="text-xs border-b border-white/10">
+                        <td class="py-3 font-bold">${item.unidade || '--'}</td>
+                        <td class="py-3">${item.logradouro || '--'}</td>
+                        <td class="py-3 text-yellow-400">📦 ${item.empresa || '--'}</td>
+                        <td class="py-3 font-mono">${item.codigo || '--'}</td>
+                        <td class="py-3"><button onclick="entregar('${item.id}')" class="bg-green-600 px-3 py-1 rounded-lg">Entregar</button></td>
+                    </tr>`;
             });
         }
     }
-    // ... manter o restante das funções salvarEncomenda e entregar ...
+
+    // Chama a função ao carregar a página
     carregarEncomendas();
 </script>
 </body>
