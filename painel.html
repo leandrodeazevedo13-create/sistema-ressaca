@@ -35,41 +35,47 @@
     </div>
 
     <script>
-        const supabase = supabase.createClient(
-            'https://oreltmkohfzptelcqmau.supabase.co', 
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yZWx0bWtvaGZ6cHRlbGNxbWF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTc0NTMsImV4cCI6MjA5NTY3MzQ1M30.cZUui1XdJ1m1qwivtDiR_3-byxnLU5ZwHffSv2tyrCQ'
-        );
+    // 1. Inicialização segura (evita o erro de duplicidade)
+    window.supabaseClient = window.supabaseClient || supabase.createClient(
+        'https://oreltmkohfzptelcqmau.supabase.co', 
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yZWx0bWtvaGZ6cHRlbGNxbWF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTc0NTMsImV4cCI6MjA5NTY3MzQ1M30.cZUui1XdJ1m1qwivtDiR_3-byxnLU5ZwHffSv2tyrCQ'
+    );
 
-        async function carregar() {
-            const { data } = await supabase.from('encomendas').select('*');
-            const tbody = document.getElementById('tabelaEncomendas');
-            if(data) {
-                tbody.innerHTML = data.map(i => `
-                    <tr class="text-xs">
-                        <td class="py-3">${i.unidade}</td>
-                        <td class="py-3">${i.empresa}</td>
-                        <td class="py-3">${i.codigo}</td>
-                        <td class="py-3"><button onclick="entregar('${i.id}')" class="bg-green-600 px-2 rounded">OK</button></td>
-                    </tr>`).join('');
-            }
+    // 2. Função de carregamento (simplificada e direta)
+    async function carregarEncomendas() {
+        const { data, error } = await window.supabaseClient.from('encomendas').select('*');
+        if (error) { console.error("Erro ao carregar:", error.message); return; }
+        
+        const corpo = document.getElementById('tabelaEncomendas');
+        if (corpo) {
+            corpo.innerHTML = data.map(item => `
+                <tr class="text-xs border-b border-white/10">
+                    <td class="py-3">${item.unidade || '--'}</td>
+                    <td class="py-3">${item.logradouro || '--'}</td>
+                    <td class="py-3">📦 ${item.empresa || '--'}</td>
+                    <td class="py-3 font-mono">${item.codigo || '--'}</td>
+                    <td class="py-3"><button onclick="entregar('${item.id}')" class="bg-green-600 px-2 py-1 rounded">OK</button></td>
+                </tr>`).join('');
         }
+    }
 
-        async function salvar() {
-            await supabase.from('encomendas').insert([{
-                unidade: document.getElementById('in-unid').value,
-                empresa: document.getElementById('in-emp').value,
-                codigo: document.getElementById('in-cod').value
-            }]);
+    // 3. Função de salvar (corrigida para pegar os IDs do seu modal)
+    async function salvarEncomenda() {
+        const { error } = await window.supabaseClient.from('encomendas').insert([{
+            unidade: document.getElementById('in-unid').value,
+            logradouro: document.getElementById('in-log').value,
+            empresa: document.getElementById('in-emp').value,
+            codigo: document.getElementById('in-cod').value
+        }]);
+
+        if (error) { alert("Erro ao salvar: " + error.message); }
+        else {
             document.getElementById('modal').classList.add('hidden');
-            carregar();
+            carregarEncomendas(); // Atualiza a lista na hora
         }
+    }
 
-        async function entregar(id) {
-            await supabase.from('encomendas').update({ status: 'entregue' }).eq('id', id);
-            carregar();
-        }
-
-        carregar();
-    </script>
+    carregarEncomendas();
+</script>
 </body>
 </html>
