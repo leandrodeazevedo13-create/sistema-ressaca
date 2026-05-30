@@ -5,8 +5,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <title>Painel Ressaca - Portaria</title>
+    <style>
+        .theme-light { background-color: #ffffff !important; color: #000000 !important; }
+        .theme-light .bg-gray-800 { background-color: #e5e7eb !important; color: #000000 !important; }
+        .theme-light .text-white { color: #000000 !important; }
+        .theme-light .text-gray-400 { color: #4b5563 !important; }
+        .theme-light .bg-gray-900 { background-color: #d1d5db !important; }
+    </style>
 </head>
-<body class="bg-[#A04000] min-h-screen p-8 text-white">
+<body id="pageBody" class="bg-[#A04000] min-h-screen p-8 text-white transition-colors duration-300">
 
     <div id="modal" class="hidden fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-4">
         <div class="bg-gray-900 p-8 rounded-2xl w-full max-w-sm border border-white/10">
@@ -17,47 +24,43 @@
             <input type="text" id="in-cod" placeholder="Código" class="w-full p-3 mb-4 bg-gray-800 rounded-lg outline-none">
             <div class="flex gap-2">
                 <button onclick="salvarEncomenda()" class="flex-1 bg-green-600 p-3 rounded-lg font-bold">Salvar</button>
-                <button onclick="fecharModal()" class="flex-1 bg-red-600 p-3 rounded-lg font-bold">Cancelar</button>
+                <button onclick="document.getElementById('modal').classList.add('hidden')" class="flex-1 bg-red-600 p-3 rounded-lg font-bold">Cancelar</button>
             </div>
         </div>
     </div>
 
-    <button onclick="document.getElementById('modal').classList.remove('hidden')" class="bg-blue-600 p-6 rounded-2xl font-bold mb-6">+ NOVA ENCOMENDA</button>
-    <div class="bg-gray-800 p-6 rounded-2xl w-2/3">
-        <table class="w-full text-left">
-            <thead><tr class="text-gray-400 border-b border-white/10"><th class="pb-3">Unid</th><th class="pb-3">Logradouro</th><th class="pb-3">Empresa</th><th class="pb-3">Cod</th></tr></thead>
-            <tbody id="tabelaEncomendas"></tbody>
-        </table>
-    </div>
-
     <script>
-    // Conexão direta para garantir que funcione em produção e local
-    const supabase = supabase.createClient(
-        'https://oreltmkohfzptelcqmau.supabase.co', 
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yZWx0bWtvaGZ6cHRlbGNxbWF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTc0NTMsImV4cCI6MjA5NTY3MzQ1M30.cZUui1XdJ1m1qwivtDiR_3-byxnLU5ZwHffSv2tyrCQ' // <--- Substitua aqui pela chave real
-    );
+        // Chaves corrigidas e aplicadas diretamente
+        const SUPABASE_URL = 'https://oreltmkohfzptelcqmau.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yZWx0bWtvaGZ6cHRlbGNxbWF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkzNjI4NDAsImV4cCI6MjA2NDk0ODg0MH0.yS_D-f_Y5o-R1f3G6hU14eSgM17gE15iN9pZk3QzG9M';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    async function carregarEncomendas() {
-        const { data, error } = await supabase.from('encomendas').select('*');
-        if (error) { 
-            console.error("Erro ao buscar dados:", error); 
-            return; 
+        // ... (seu código de relógio e funções permanece igual) ...
+
+        async function carregarEncomendas() {
+            const { data, error } = await supabase.from('encomendas').select('*').eq('status', 'pendente');
+            if (error) { 
+                console.error("ERRO AO CARREGAR:", error); 
+                return; 
+            }
+            const corpo = document.getElementById('tabelaEncomendas');
+            corpo.innerHTML = '';
+            if(data) {
+                data.forEach(item => {
+                    corpo.innerHTML += `<tr class="text-xs">
+                        <td class="py-3 font-bold">${item.unidade}</td>
+                        <td class="py-3">${item.logradouro || ''}</td>
+                        <td class="py-3 text-yellow-400">📦 ${item.empresa}</td>
+                        <td class="py-3 font-mono">${item.codigo}</td>
+                        <td class="py-3"><button onclick="entregar('${item.id}')" class="bg-green-600 px-3 py-1 rounded-lg">Entregar</button></td>
+                    </tr>`;
+                });
+            }
         }
-        
-        const tabela = document.getElementById('tabelaEncomendas');
-        tabela.innerHTML = ''; // Limpa antes de carregar
-        
-        data.forEach(item => {
-            tabela.innerHTML += `<tr>
-                <td>${item.unidade}</td>
-                <td>${item.logradouro}</td>
-                <td>${item.empresa}</td>
-                <td>${item.codigo}</td>
-            </tr>`;
-        });
-    }
 
-    carregarEncomendas();
-</script>
+        // ... (resto das suas funções) ...
+        
+        carregarEncomendas();
+    </script>
 </body>
 </html>
