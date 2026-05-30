@@ -1,81 +1,97 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <title>Painel Ressaca</title>
-</head>
-<body class="bg-[#A04000] text-white min-h-screen">
-    <div class="max-w-6xl mx-auto p-6">
-        <header class="mb-8 text-center">
-            <h1 class="text-2xl font-bold uppercase tracking-widest">ASSOCIAÇÃO MORADORES BAIRRO RESSACA</h1>
-        </header>
+<script>
+    // 1. Inicialização segura (evita o erro 'already been declared')
+    if (!window.supabase) {
+        window.supabase = supabase.createClient(
+            'https://oreltmkohfzptelcqmau.supabase.co', 
+            '<script>
+    // 1. Inicialização segura (evita o erro 'already been declared')
+    if (!window.supabase) {
+        window.supabase = supabase.createClient(
+            'https://oreltmkohfzptelcqmau.supabase.co', 
+            'SUA_CHAVE_ANON_AQUI' // Certifique-se de usar a chave anon correta
+        );
+    }
 
-        <div class="flex gap-6">
-            <button onclick="document.getElementById('modal').classList.remove('hidden')" class="bg-blue-600 px-6 py-3 rounded-xl font-bold">NOVA ENCOMENDA</button>
-            <div class="w-2/3 bg-gray-800 p-6 rounded-2xl">
-                <table class="w-full text-left">
-                    <thead class="text-gray-400 text-xs uppercase">
-                        <tr><th class="pb-3">Unid</th><th class="pb-3">Empresa</th><th class="pb-3">Código</th><th class="pb-3">Ação</th></tr>
-                    </thead>
-                    <tbody id="tabelaEncomendas" class="divide-y divide-white/10"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
-        <div class="bg-gray-900 p-6 rounded-2xl w-80">
-            <input type="text" id="in-unid" placeholder="Unidade" class="w-full p-2 mb-2 bg-gray-800 rounded">
-            <input type="text" id="in-emp" placeholder="Empresa" class="w-full p-2 mb-2 bg-gray-800 rounded">
-            <input type="text" id="in-cod" placeholder="Código" class="w-full p-2 mb-4 bg-gray-800 rounded">
-            <button onclick="salvar()" class="w-full bg-green-600 p-2 rounded">Salvar</button>
-        </div>
-    </div>
-
-    <script>
-    // 1. Inicialização segura (evita o erro de duplicidade)
-    window.supabaseClient = window.supabaseClient || supabase.createClient(
-        'https://oreltmkohfzptelcqmau.supabase.co', 
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yZWx0bWtvaGZ6cHRlbGNxbWF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTc0NTMsImV4cCI6MjA5NTY3MzQ1M30.cZUui1XdJ1m1qwivtDiR_3-byxnLU5ZwHffSv2tyrCQ'
-    );
-
-    // 2. Função de carregamento (simplificada e direta)
     async function carregarEncomendas() {
-        const { data, error } = await window.supabaseClient.from('encomendas').select('*');
-        if (error) { console.error("Erro ao carregar:", error.message); return; }
+        const { data, error } = await window.supabase.from('encomendas').select('*');
+        if (error) {
+            console.error("Erro ao carregar:", error.message);
+            return;
+        }
         
-        const corpo = document.getElementById('tabelaEncomendas');
-        if (corpo) {
-            corpo.innerHTML = data.map(item => `
-                <tr class="text-xs border-b border-white/10">
-                    <td class="py-3">${item.unidade || '--'}</td>
-                    <td class="py-3">${item.logradouro || '--'}</td>
-                    <td class="py-3">📦 ${item.empresa || '--'}</td>
-                    <td class="py-3 font-mono">${item.codigo || '--'}</td>
-                    <td class="py-3"><button onclick="entregar('${item.id}')" class="bg-green-600 px-2 py-1 rounded">OK</button></td>
+        const tbody = document.getElementById('tabelaEncomendas');
+        if (tbody && data) {
+            tbody.innerHTML = data.map(i => `
+                <tr class="border-b border-gray-700">
+                    <td class="p-2">${i.unidade || ''}</td>
+                    <td class="p-2">${i.empresa || ''}</td>
+                    <td class="p-2">${i.codigo || ''}</td>
+                    <td class="p-2"><button onclick="entregar('${i.id}')" class="bg-green-600 px-2 py-1 rounded">OK</button></td>
                 </tr>`).join('');
         }
     }
 
-    // 3. Função de salvar (corrigida para pegar os IDs do seu modal)
     async function salvarEncomenda() {
-        const { error } = await window.supabaseClient.from('encomendas').insert([{
-            unidade: document.getElementById('in-unid').value,
-            logradouro: document.getElementById('in-log').value,
-            empresa: document.getElementById('in-emp').value,
-            codigo: document.getElementById('in-cod').value
+        // Obtenha os valores dos inputs do seu modal
+        const unidade = document.getElementById('in-unid').value;
+        const empresa = document.getElementById('in-emp').value;
+        const codigo = document.getElementById('in-cod').value;
+
+        const { error } = await window.supabase.from('encomendas').insert([{
+            unidade, empresa, codigo, status: 'pendente'
         }]);
 
-        if (error) { alert("Erro ao salvar: " + error.message); }
-        else {
+        if (error) {
+            alert("Erro ao salvar: " + error.message);
+        } else {
             document.getElementById('modal').classList.add('hidden');
-            carregarEncomendas(); // Atualiza a lista na hora
+            carregarEncomendas(); // Recarrega a tabela após salvar
         }
     }
 
+    // Chama a função ao carregar a página
+    carregarEncomendas();
+</script>' // Certifique-se de usar a chave anon correta
+        );
+    }
+
+    async function carregarEncomendas() {
+        const { data, error } = await window.supabase.from('encomendas').select('*');
+        if (error) {
+            console.error("Erro ao carregar:", error.message);
+            return;
+        }
+        
+        const tbody = document.getElementById('tabelaEncomendas');
+        if (tbody && data) {
+            tbody.innerHTML = data.map(i => `
+                <tr class="border-b border-gray-700">
+                    <td class="p-2">${i.unidade || ''}</td>
+                    <td class="p-2">${i.empresa || ''}</td>
+                    <td class="p-2">${i.codigo || ''}</td>
+                    <td class="p-2"><button onclick="entregar('${i.id}')" class="bg-green-600 px-2 py-1 rounded">OK</button></td>
+                </tr>`).join('');
+        }
+    }
+
+    async function salvarEncomenda() {
+        // Obtenha os valores dos inputs do seu modal
+        const unidade = document.getElementById('in-unid').value;
+        const empresa = document.getElementById('in-emp').value;
+        const codigo = document.getElementById('in-cod').value;
+
+        const { error } = await window.supabase.from('encomendas').insert([{
+            unidade, empresa, codigo, status: 'pendente'
+        }]);
+
+        if (error) {
+            alert("Erro ao salvar: " + error.message);
+        } else {
+            document.getElementById('modal').classList.add('hidden');
+            carregarEncomendas(); // Recarrega a tabela após salvar
+        }
+    }
+
+    // Chama a função ao carregar a página
     carregarEncomendas();
 </script>
-</body>
-</html>
