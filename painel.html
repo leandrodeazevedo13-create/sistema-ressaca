@@ -2,52 +2,90 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Ressaca</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <title>Painel Ressaca</title>
 </head>
-<body class="bg-[#A04000] text-white min-h-screen">
-    <div class="max-w-6xl mx-auto p-6">
-        <header class="mb-8 text-center">
-            <h1 class="text-2xl font-bold uppercase tracking-widest">ASSOCIAÇÃO MORADORES BAIRRO RESSACA</h1>
+<body class="bg-[#A04000] text-white min-h-screen p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl font-bold uppercase tracking-widest">Associação Moradores - Ressaca</h1>
         </header>
 
-        <div class="flex gap-6">
-            <button onclick="document.getElementById('modal').classList.remove('hidden')" class="bg-blue-600 px-6 py-3 rounded-xl font-bold">NOVA ENCOMENDA</button>
-            <div class="w-2/3 bg-gray-800 p-6 rounded-2xl">
-                <table class="w-full text-left">
-                    <thead class="text-gray-400 text-xs uppercase">
-                        <tr><th class="pb-3">Unid</th><th class="pb-3">Empresa</th><th class="pb-3">Código</th><th class="pb-3">Ação</th></tr>
-                    </thead>
-                    <tbody id="tabelaEncomendas" class="divide-y divide-white/10"></tbody>
-                </table>
+        <button onclick="document.getElementById('modal').classList.remove('hidden')" 
+                class="bg-blue-600 px-6 py-3 rounded-xl font-bold mb-6 hover:bg-blue-700 transition">
+            + NOVA ENCOMENDA
+        </button>
+
+        <div class="bg-gray-800 p-6 rounded-2xl shadow-xl">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-gray-400 text-sm uppercase">
+                        <th class="pb-4">Unidade</th>
+                        <th class="pb-4">Empresa</th>
+                        <th class="pb-4">Código</th>
+                        <th class="pb-4">Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela" class="divide-y divide-white/10"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4">
+        <div class="bg-gray-900 p-8 rounded-2xl w-full max-w-sm">
+            <h2 class="text-xl font-bold mb-4">Nova Encomenda</h2>
+            <input id="unid" type="text" placeholder="Unidade" class="w-full p-3 mb-2 bg-gray-800 rounded">
+            <input id="emp" type="text" placeholder="Empresa" class="w-full p-3 mb-2 bg-gray-800 rounded">
+            <input id="cod" type="text" placeholder="Código" class="w-full p-3 mb-4 bg-gray-800 rounded">
+            <div class="flex gap-2">
+                <button onclick="salvar()" class="flex-1 bg-green-600 p-3 rounded font-bold">Salvar</button>
+                <button onclick="document.getElementById('modal').classList.add('hidden')" class="flex-1 bg-red-600 p-3 rounded font-bold">Cancelar</button>
             </div>
         </div>
     </div>
 
-    <div id="modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
-        <div class="bg-gray-900 p-6 rounded-2xl w-80">
-            <input type="text" id="in-unid" placeholder="Unidade" class="w-full p-2 mb-2 bg-gray-800 rounded">
-            <input type="text" id="in-emp" placeholder="Empresa" class="w-full p-2 mb-2 bg-gray-800 rounded">
-            <input type="text" id="in-cod" placeholder="Código" class="w-full p-2 mb-4 bg-gray-800 rounded">
-            <button onclick="salvar()" class="w-full bg-green-600 p-2 rounded">Salvar</button>
-        </div>
-    </div>
-
     <script>
-    // Inicialização única e segura
-    if (typeof window.supabaseClient === 'undefined') {
-        window.supabaseClient = supabase.createClient(
+        // Inicialização única (SUBSTITUA PELA SUA CHAVE REAL SE PRECISAR)
+        const supabase = supabase.createClient(
             'https://oreltmkohfzptelcqmau.supabase.co', 
-            'SUA_CHAVE_ANON_AQUI'
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yZWx0bWtvaGZ6cHRlbGNxbWF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTc0NTMsImV4cCI6MjA5NTY3MzQ1M30.cZUui1XdJ1m1qwivtDiR_3-byxnLU5ZwHffSv2tyrCQ'
         );
-    }
 
-    async function carregarEncomendas() {
-        const { data, error } = await window.supabaseClient.from('encomendas').select('*');
-        if (error) { console.error(error); return; }
-        // ... restante do seu código
-    }
-</script>
+        async function carregar() {
+            const { data, error } = await supabase.from('encomendas').select('*');
+            if (error) return console.error(error);
+            
+            const tbody = document.getElementById('tabela');
+            tbody.innerHTML = data.map(i => `
+                <tr>
+                    <td class="py-4">${i.unidade}</td>
+                    <td class="py-4">${i.empresa}</td>
+                    <td class="py-4">${i.codigo}</td>
+                    <td class="py-4"><button onclick="entregar('${i.id}')" class="bg-green-600 px-3 py-1 rounded">OK</button></td>
+                </tr>
+            `).join('');
+        }
+
+        async function salvar() {
+            await supabase.from('encomendas').insert([{
+                unidade: document.getElementById('unid').value,
+                empresa: document.getElementById('emp').value,
+                codigo: document.getElementById('cod').value,
+                status: 'pendente'
+            }]);
+            document.getElementById('modal').classList.add('hidden');
+            carregar();
+        }
+
+        async function entregar(id) {
+            await supabase.from('encomendas').update({ status: 'entregue' }).eq('id', id);
+            carregar();
+        }
+
+        carregar();
+    </script>
 </body>
 </html>
