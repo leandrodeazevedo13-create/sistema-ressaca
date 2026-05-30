@@ -38,8 +38,8 @@
         // ... (seu código de relógio e funções permanece igual) ...
 
         async function carregarEncomendas() {
-            const { data, error } = await supabase.from('encomendas').select('*').eq('status', 'pendente');
-            if (error) { 
+           const { data, error } = await supabase.from('encomendas').select('*');
+            if (error) console.error("Erro Supabase:", error); if (error) { 
                 console.error("ERRO AO CARREGAR:", error); 
                 return; 
             }
