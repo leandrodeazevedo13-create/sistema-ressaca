@@ -17,14 +17,21 @@
 
     <script>
         function verificar() {
-            const senha = document.getElementById('senha').value;
-            // Altere '1234' pela senha que desejar
-            if(senha === '1234') {
-                window.location.href = 'painel.html'; 
-            } else {
-                alert('Senha incorreta!');
-            }
-        }
+    const senha = document.getElementById('senha').value;
+
+    if (senha === '1234') { // Senha da Portaria
+        window.location.href = 'painel.html';
+    } 
+    else if (senha === '9999') { // Senha do Administrador/Gestor
+        window.location.href = 'painelgestorADM.html';
+    }
+    else if (senha === '0000') { // Senha do Morador (Exemplo)
+        window.location.href = 'telausuario.html';
+    }
+    else {
+        alert('Senha incorreta!');
+    }
+}
     </script>
 </body>
 </html>
