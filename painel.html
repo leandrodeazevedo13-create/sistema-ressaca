@@ -17,57 +17,47 @@
             <input type="text" id="in-cod" placeholder="Código" class="w-full p-3 mb-4 bg-gray-800 rounded-lg outline-none">
             <div class="flex gap-2">
                 <button onclick="salvarEncomenda()" class="flex-1 bg-green-600 p-3 rounded-lg font-bold">Salvar</button>
-                <button onclick="document.getElementById('modal').classList.add('hidden')" class="flex-1 bg-red-600 p-3 rounded-lg font-bold">Cancelar</button>
+                <button onclick="fecharModal()" class="flex-1 bg-red-600 p-3 rounded-lg font-bold">Cancelar</button>
             </div>
         </div>
     </div>
 
-    <div class="max-w-6xl mx-auto flex gap-6">
-        <button onclick="document.getElementById('modal').classList.remove('hidden')" class="bg-blue-600 p-6 rounded-2xl font-bold">+ NOVA ENCOMENDA</button>
-        <div class="w-2/3 bg-gray-800 p-6 rounded-2xl">
-            <table class="w-full text-left">
-                <thead><tr class="text-gray-400 text-xs uppercase border-b border-white/10">
-                    <th class="pb-3">Unid</th><th class="pb-3">Logradouro</th><th class="pb-3">Empresa</th><th class="pb-3">Cod</th>
-                </tr></thead>
-                <tbody id="tabelaEncomendas" class="divide-y divide-white/10"></tbody>
-            </table>
-        </div>
+    <button onclick="document.getElementById('modal').classList.remove('hidden')" class="bg-blue-600 p-6 rounded-2xl font-bold mb-6">+ NOVA ENCOMENDA</button>
+    <div class="bg-gray-800 p-6 rounded-2xl w-2/3">
+        <table class="w-full text-left">
+            <thead><tr class="text-gray-400 border-b border-white/10"><th class="pb-3">Unid</th><th class="pb-3">Logradouro</th><th class="pb-3">Empresa</th><th class="pb-3">Cod</th></tr></thead>
+            <tbody id="tabelaEncomendas"></tbody>
+        </table>
     </div>
 
     <script>
-        // Use as credenciais corretas do seu projeto Supabase
-        const supabase = supabase.createClient('SUA_URL_SUPABASE', 'SUA_CHAVE_PUBLICA');
+    // Conexão direta para garantir que funcione em produção e local
+    const supabase = supabase.createClient(
+        'https://oreltmkohfzptelcqmau.supabase.co', 
+        'COLE_SUA_CHAVE_PUBLICA_AQUI' // <--- Substitua aqui pela chave real
+    );
 
-        async function carregarEncomendas() {
-            const { data, error } = await supabase.from('encomendas').select('*');
-            if (error) { console.error("Erro ao carregar:", error); return; }
-            
-            const corpo = document.getElementById('tabelaEncomendas');
-            corpo.innerHTML = '';
-            data.forEach(item => {
-                corpo.innerHTML += `<tr class="text-xs">
-                    <td class="py-3">${item.unidade}</td>
-                    <td class="py-3">${item.logradouro || ''}</td>
-                    <td class="py-3">${item.empresa}</td>
-                    <td class="py-3 font-mono">${item.codigo}</td>
-                </tr>`;
-            });
+    async function carregarEncomendas() {
+        const { data, error } = await supabase.from('encomendas').select('*');
+        if (error) { 
+            console.error("Erro ao buscar dados:", error); 
+            return; 
         }
+        
+        const tabela = document.getElementById('tabelaEncomendas');
+        tabela.innerHTML = ''; // Limpa antes de carregar
+        
+        data.forEach(item => {
+            tabela.innerHTML += `<tr>
+                <td>${item.unidade}</td>
+                <td>${item.logradouro}</td>
+                <td>${item.empresa}</td>
+                <td>${item.codigo}</td>
+            </tr>`;
+        });
+    }
 
-        async function salvarEncomenda() {
-            const nova = {
-                unidade: document.getElementById('in-unid').value,
-                logradouro: document.getElementById('in-log').value,
-                empresa: document.getElementById('in-emp').value,
-                codigo: document.getElementById('in-cod').value,
-                status: 'pendente'
-            };
-            const { error } = await supabase.from('encomendas').insert([nova]);
-            if (error) { alert("Erro ao salvar: " + error.message); }
-            else { location.reload(); }
-        }
-
-        carregarEncomendas();
-    </script>
+    carregarEncomendas();
+</script>
 </body>
 </html>
