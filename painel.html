@@ -3,86 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Ressaca</title>
+    <title>Painel de Controle</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-[#A04000] text-white min-h-screen p-8">
+<body class="bg-[#A04000] text-white min-h-screen p-4">
 
     <div class="max-w-4xl mx-auto">
-        <header class="text-center mb-10">
-            <h1 class="text-3xl font-bold uppercase tracking-widest">Associação Moradores - Ressaca</h1>
-        </header>
+        <h1 class="text-2xl font-bold text-center mb-6">PAINEL RESSACA</h1>
+        
+        <button onclick="document.getElementById('modal').style.display='flex'" 
+                class="bg-blue-600 px-4 py-2 rounded font-bold mb-4">NOVA ENCOMENDA</button>
 
-        <button onclick="document.getElementById('modal').classList.remove('hidden')" 
-                class="bg-blue-600 px-6 py-3 rounded-xl font-bold mb-6 hover:bg-blue-700 transition">
-            + NOVA ENCOMENDA
-        </button>
-
-        <div class="bg-gray-800 p-6 rounded-2xl shadow-xl">
-            <table class="w-full text-left">
+        <div class="bg-gray-800 p-4 rounded shadow">
+            <table class="w-full text-left text-sm">
                 <thead>
-                    <tr class="text-gray-400 text-sm uppercase">
-                        <th class="pb-4">Unidade</th>
-                        <th class="pb-4">Empresa</th>
-                        <th class="pb-4">Código</th>
-                        <th class="pb-4">Ação</th>
+                    <tr class="text-gray-400 border-b border-gray-700">
+                        <th class="pb-2">Unid</th>
+                        <th class="pb-2">Empresa</th>
+                        <th class="pb-2">Cod</th>
+                        <th class="pb-2">Ação</th>
                     </tr>
                 </thead>
-                <tbody id="tabela" class="divide-y divide-white/10"></tbody>
+                <tbody id="corpoTabela"></tbody>
             </table>
         </div>
     </div>
 
-    <div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4">
-        <div class="bg-gray-900 p-8 rounded-2xl w-full max-w-sm">
-            <h2 class="text-xl font-bold mb-4">Nova Encomenda</h2>
-            <input id="unid" type="text" placeholder="Unidade" class="w-full p-3 mb-2 bg-gray-800 rounded">
-            <input id="emp" type="text" placeholder="Empresa" class="w-full p-3 mb-2 bg-gray-800 rounded">
-            <input id="cod" type="text" placeholder="Código" class="w-full p-3 mb-4 bg-gray-800 rounded">
-            <div class="flex gap-2">
-                <button onclick="salvar()" class="flex-1 bg-green-600 p-3 rounded font-bold">Salvar</button>
-                <button onclick="document.getElementById('modal').classList.add('hidden')" class="flex-1 bg-red-600 p-3 rounded font-bold">Cancelar</button>
-            </div>
+    <div id="modal" style="display:none" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4">
+        <div class="bg-gray-900 p-6 rounded w-full max-w-sm">
+            <input type="text" id="unid" placeholder="Unidade" class="w-full p-2 mb-2 bg-gray-800 rounded">
+            <input type="text" id="emp" placeholder="Empresa" class="w-full p-2 mb-2 bg-gray-800 rounded">
+            <input type="text" id="cod" placeholder="Código" class="w-full p-2 mb-4 bg-gray-800 rounded">
+            <button onclick="salvar()" class="w-full bg-green-600 p-2 rounded font-bold">SALVAR</button>
+            <button onclick="document.getElementById('modal').style.display='none'" class="w-full bg-red-600 p-2 rounded mt-2 font-bold">FECHAR</button>
         </div>
     </div>
 
     <script>
-        // Inicialização única (SUBSTITUA PELA SUA CHAVE REAL SE PRECISAR)
-        const supabase = supabase.createClient(
+        // Inicialização Única
+        const sb = supabase.createClient(
             'https://oreltmkohfzptelcqmau.supabase.co', 
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yZWx0bWtvaGZ6cHRlbGNxbWF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTc0NTMsImV4cCI6MjA5NTY3MzQ1M30.cZUui1XdJ1m1qwivtDiR_3-byxnLU5ZwHffSv2tyrCQ'
         );
 
         async function carregar() {
-            const { data, error } = await supabase.from('encomendas').select('*');
-            if (error) return console.error(error);
-            
-            const tbody = document.getElementById('tabela');
-            tbody.innerHTML = data.map(i => `
-                <tr>
-                    <td class="py-4">${i.unidade}</td>
-                    <td class="py-4">${i.empresa}</td>
-                    <td class="py-4">${i.codigo}</td>
-                    <td class="py-4"><button onclick="entregar('${i.id}')" class="bg-green-600 px-3 py-1 rounded">OK</button></td>
+            const { data } = await sb.from('encomendas').select('*');
+            document.getElementById('corpoTabela').innerHTML = data.map(i => `
+                <tr class="border-b border-gray-700">
+                    <td class="py-2">${i.unidade}</td>
+                    <td class="py-2">${i.empresa}</td>
+                    <td class="py-2">${i.codigo}</td>
+                    <td class="py-2"><button onclick="deletar('${i.id}')" class="bg-red-500 px-2 rounded text-xs">X</button></td>
                 </tr>
             `).join('');
         }
 
         async function salvar() {
-            await supabase.from('encomendas').insert([{
+            await sb.from('encomendas').insert([{
                 unidade: document.getElementById('unid').value,
                 empresa: document.getElementById('emp').value,
-                codigo: document.getElementById('cod').value,
-                status: 'pendente'
+                codigo: document.getElementById('cod').value
             }]);
-            document.getElementById('modal').classList.add('hidden');
-            carregar();
+            location.reload(); // Recarrega para limpar tudo e evitar erros
         }
 
-        async function entregar(id) {
-            await supabase.from('encomendas').update({ status: 'entregue' }).eq('id', id);
-            carregar();
+        async function deletar(id) {
+            await sb.from('encomendas').delete().eq('id', id);
+            location.reload();
         }
 
         carregar();
