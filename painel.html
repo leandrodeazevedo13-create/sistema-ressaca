@@ -20,6 +20,8 @@
             <input type="text" id="in-unid" placeholder="Unidade" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none">
             <input type="text" id="in-log" placeholder="Logradouro" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none">
             <input type="text" id="in-emp" placeholder="Empresa" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none">
+            <input type="text" id="in-cod" placeholder="Código" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none">
+            <input type="file" id="in-foto" class="w-full p-3 mb-4 bg-gray-800 rounded-lg outline-none text-sm">
             <div class="flex gap-2">
                 <button id="btnSalvarEncomenda" class="flex-1 bg-green-600 p-3 rounded-lg font-bold">Salvar</button>
                 <button onclick="document.getElementById('modalEncomenda').classList.add('hidden')" class="flex-1 bg-red-600 p-3 rounded-lg font-bold">Cancelar</button>
@@ -54,7 +56,7 @@
         <div class="w-2/3 bg-gray-800 p-6 rounded-2xl shadow-xl">
             <table class="w-full text-left">
                 <thead class="text-gray-400 text-xs uppercase border-b border-white/10">
-                    <tr><th class="pb-3">Unid</th><th class="pb-3">Logradouro</th><th class="pb-3">Empresa</th><th class="pb-3">Ação</th></tr>
+                    <tr><th class="pb-3">Unid</th><th class="pb-3">Logradouro</th><th class="pb-3">Empresa</th><th class="pb-3">Cod</th><th class="pb-3">Ação</th></tr>
                 </thead>
                 <tbody id="tabelaEncomendas" class="divide-y divide-white/10"></tbody>
             </table>

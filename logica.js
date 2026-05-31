@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td class="py-3 font-bold">${item.unidade}</td>
                     <td class="py-3">${item.logradouro}</td>
                     <td class="py-3 text-yellow-400">${item.empresa}</td>
+                    <td class="py-3">${item.codigo}</td>
                     <td class="py-3"><button data-id="${item.id}" class="btn-entregar bg-green-600 px-3 py-1 rounded-lg">Entregar</button></td>
                 </tr>
             `).join('');
@@ -32,9 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const unid = document.getElementById('in-unid').value;
         const log = document.getElementById('in-log').value;
         const emp = document.getElementById('in-emp').value;
+        const cod = document.getElementById('in-cod').value;
 
         const { error } = await supabase.from('encomendas').insert([
-            { unidade: unid, logradouro: log, empresa: emp, status: 'pendente' }
+            { unidade: unid, logradouro: log, empresa: emp, codigo: cod, status: 'pendente' }
         ]);
 
         if (error) {
@@ -45,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Entregar (Delegação de Eventos)
+    // Entregar
     document.addEventListener('click', async (e) => {
         if (e.target.classList.contains('btn-entregar')) {
             const id = e.target.dataset.id;
