@@ -14,6 +14,7 @@
 </head>
 <body id="pageBody" class="bg-[#A04000] min-h-screen p-8 text-white transition-colors duration-300">
 
+    <!-- Modal Nova Encomenda -->
     <div id="modal" class="hidden fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-4">
         <div class="bg-gray-900 p-8 rounded-2xl w-full max-w-sm border border-white/10">
             <h2 class="text-xl font-bold mb-4">Nova Encomenda</h2>
@@ -23,43 +24,87 @@
             <input type="text" id="in-cod" placeholder="Código" class="w-full p-3 mb-4 bg-gray-800 rounded-lg outline-none">
             <div class="flex gap-2">
                 <button id="btnSalvar" class="flex-1 bg-green-600 p-3 rounded-lg font-bold">Salvar</button>
-                <button id="btnCancelar" class="flex-1 bg-red-600 p-3 rounded-lg font-bold">Cancelar</button>
+                <button onclick="document.getElementById('modal').classList.add('hidden')" class="flex-1 bg-red-600 p-3 rounded-lg font-bold">Cancelar</button>
             </div>
         </div>
     </div>
 
-    <header class="max-w-6xl mx-auto mb-8 text-center"><h1 class="text-3xl font-bold uppercase tracking-widest">ASSOCIAÇÃO MORADORES BAIRRO RESSACA 🏄‍♂️</h1></header>
+    <!-- Relógio e Data -->
+    <div class="fixed top-6 left-8 z-50">
+        <div id="relogio" class="text-3xl font-mono font-bold tracking-widest">00:00:00</div>
+        <div id="data" class="text-xs uppercase tracking-widest opacity-80">--/--/----</div>
+    </div>
+
+    <!-- Botão Play -->
+    <button id="playBtn" onclick="togglePlay()" class="fixed top-6 right-20 w-16 h-16 rounded-full bg-gradient-to-br from-gray-400 to-gray-600 z-50 flex items-center justify-center">
+        <span id="playIcon" class="text-3xl">▶</span>
+    </button>
+
+    <!-- Seletor de Cores -->
+    <div class="fixed right-6 top-6 flex flex-col gap-1.5 bg-black/20 p-2 rounded-full z-50">
+        <button onclick="mudarCor('#A04000')" class="w-5 h-5 rounded-full bg-[#A04000]"></button>
+        <button onclick="mudarCor('#374151')" class="w-5 h-5 rounded-full bg-gray-700"></button>
+        <button onclick="mudarCor('#1e3a8a')" class="w-5 h-5 rounded-full bg-blue-900"></button>
+        <button onclick="document.body.classList.toggle('theme-light')" class="w-5 h-5 rounded-full bg-white border border-black"></button>
+    </div>
+
+    <header class="max-w-6xl mx-auto mb-8 text-center">
+        <h1 class="text-3xl font-bold uppercase tracking-widest">ASSOCIAÇÃO MORADORES BAIRRO RESSACA 🏄‍♂️</h1>
+    </header>
+
     <div class="max-w-6xl mx-auto flex gap-6">
         <div class="w-1/3 flex flex-col gap-4">
-            <button onclick="document.getElementById('modal').classList.remove('hidden')" class="bg-blue-600 p-6 rounded-2xl font-bold">+ NOVA ENCOMENDA</button>
+            <button onclick="document.getElementById('modal').classList.remove('hidden')" class="bg-blue-600 p-6 rounded-2xl font-bold hover:bg-blue-700">+ NOVA ENCOMENDA</button>
+            <button class="bg-gray-600 p-6 rounded-2xl font-bold">+ CADASTRAR USUÁRIO</button>
+            <button class="bg-amber-600 p-4 rounded-2xl font-bold text-sm">⚙️ CONFIGURAÇÕES</button>
         </div>
+
         <div class="w-2/3 bg-gray-800 p-6 rounded-2xl shadow-xl">
-            <table class="w-full text-left">
-                <thead class="text-gray-400 text-xs uppercase border-b border-white/10">
-                    <tr><th class="pb-3">Unid</th><th class="pb-3">Logradouro</th><th class="pb-3">Empresa</th><th class="pb-3">Cod</th><th class="pb-3">Ação</th></tr>
-                </thead>
-                <tbody id="tabelaEncomendas" class="divide-y divide-white/10"></tbody>
-            </table>
+            <div class="max-h-[500px] overflow-y-auto">
+                <table class="w-full text-left">
+                    <thead class="text-gray-400 text-xs uppercase border-b border-white/10">
+                        <tr><th class="pb-3">Unid</th><th class="pb-3">Logradouro</th><th class="pb-3">Empresa</th><th class="pb-3">Cod</th><th class="pb-3">Ação</th></tr>
+                    </thead>
+                    <tbody id="tabelaEncomendas" class="divide-y divide-white/10"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { supabase } from './supabase-client.js';
 
+        // Relógio
+        setInterval(() => {
+            const agora = new Date();
+            document.getElementById('relogio').innerText = agora.toLocaleTimeString();
+            document.getElementById('data').innerText = agora.toLocaleDateString();
+        }, 1000);
+
+        // Funções de Interface
+        window.mudarCor = (c) => document.getElementById('pageBody').style.backgroundColor = c;
+        window.togglePlay = () => {
+            const icon = document.getElementById('playIcon');
+            icon.innerText = (icon.innerText === '▶' ? '⏸' : '▶');
+        };
+
+        // Lógica Supabase
         async function carregarEncomendas() {
             const { data, error } = await supabase.from('encomendas').select('*').eq('status', 'pendente');
             if (error) { console.error(error); return; }
             const corpo = document.getElementById('tabelaEncomendas');
             corpo.innerHTML = '';
-            data.forEach(item => {
-                corpo.innerHTML += `<tr class="text-xs">
-                    <td class="py-3 font-bold">${item.unidade}</td>
-                    <td class="py-3">${item.logradouro}</td>
-                    <td class="py-3">${item.empresa}</td>
-                    <td class="py-3">${item.codigo}</td>
-                    <td class="py-3"><button data-id="${item.id}" class="btn-entregar bg-green-600 px-3 py-1 rounded-lg">Entregar</button></td>
-                </tr>`;
-            });
+            if(data) {
+                data.forEach(item => {
+                    corpo.innerHTML += `<tr class="text-xs">
+                        <td class="py-3 font-bold">${item.unidade}</td>
+                        <td class="py-3">${item.logradouro}</td>
+                        <td class="py-3 text-yellow-400">📦 ${item.empresa}</td>
+                        <td class="py-3 font-mono">${item.codigo}</td>
+                        <td class="py-3"><button data-id="${item.id}" class="btn-entregar bg-green-600 px-3 py-1 rounded-lg">Entregar</button></td>
+                    </tr>`;
+                });
+            }
         }
 
         document.getElementById('btnSalvar').addEventListener('click', async () => {
@@ -81,7 +126,6 @@
             }
         });
 
-        document.getElementById('btnCancelar').onclick = () => document.getElementById('modal').classList.add('hidden');
         carregarEncomendas();
     </script>
 </body>
