@@ -4,18 +4,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Relógio
     setInterval(() => {
-        const relogio = document.getElementById('relogio');
-        const data = document.getElementById('data');
-        if (relogio && data) {
-            const agora = new Date();
-            relogio.innerText = agora.toLocaleTimeString();
-            data.innerText = agora.toLocaleDateString();
-        }
+        const agora = new Date();
+        document.getElementById('relogio').innerText = agora.toLocaleTimeString();
+        document.getElementById('data').innerText = agora.toLocaleDateString();
     }, 1000);
 
     // Carregar Tabela
     async function carregarEncomendas() {
         const { data, error } = await supabase.from('encomendas').select('*').eq('status', 'pendente');
+        if (error) console.error("Erro ao carregar:", error);
+        
         const corpo = document.getElementById('tabelaEncomendas');
         if (corpo && data) {
             corpo.innerHTML = data.map(item => `
@@ -29,28 +27,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Ações de Botões
-    window.abrirModal = (id) => document.getElementById(id).classList.remove('hidden');
-    
-    document.getElementById('btnSalvar').addEventListener('click', async () => {
-        await supabase.from('encomendas').insert([{
-            unidade: document.getElementById('in-unid').value,
-            logradouro: document.getElementById('in-log').value,
-            empresa: document.getElementById('in-emp').value,
-            status: 'pendente'
-        }]);
-        document.getElementById('modalEncomenda').classList.add('hidden');
-        carregarEncomendas();
-    });
+    // Salvar Encomenda
+    document.getElementById('btnSalvarEncomenda').addEventListener('click', async () => {
+        const unid = document.getElementById('in-unid').value;
+        const log = document.getElementById('in-log').value;
+        const emp = document.getElementById('in-emp').value;
 
-    document.addEventListener('click', async (e) => {
-        if (e.target.classList.contains('btn-entregar')) {
-            await supabase.from('encomendas').update({ status: 'entregue' }).eq('id', e.target.dataset.id);
+        const { error } = await supabase.from('encomendas').insert([
+            { unidade: unid, logradouro: log, empresa: emp, status: 'pendente' }
+        ]);
+
+        if (error) {
+            alert("Erro ao salvar: " + error.message);
+        } else {
+            document.getElementById('modalEncomenda').classList.add('hidden');
             carregarEncomendas();
         }
     });
 
-    // Funções Globais (Cores/Play)
+    // Entregar (Delegação de Eventos)
+    document.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('btn-entregar')) {
+            const id = e.target.dataset.id;
+            await supabase.from('encomendas').update({ status: 'entregue' }).eq('id', id);
+            carregarEncomendas();
+        }
+    });
+
+    // Funções Globais
     window.mudarCor = (c) => document.getElementById('pageBody').style.backgroundColor = c;
     window.togglePlay = () => {
         const icon = document.getElementById('playIcon');
