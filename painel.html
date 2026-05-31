@@ -20,6 +20,7 @@
             <input type="text" id="in-endereco" placeholder="Endereço" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none">
             <input type="text" id="in-empresa" placeholder="Empresa" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none">
             <input type="text" id="in-tipo" placeholder="Tipo" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none">
+            <input type="file" id="in-foto" accept="image/*" class="w-full p-3 mb-4 bg-gray-800 rounded-lg text-sm">
             <div class="flex gap-2">
                 <button id="btnSalvarEncomenda" class="flex-1 bg-green-600 p-3 rounded-lg font-bold">Salvar</button>
                 <button onclick="document.getElementById('modalEncomenda').classList.add('hidden')" class="flex-1 bg-red-600 p-3 rounded-lg">Cancelar</button>
@@ -31,6 +32,7 @@
         <div class="bg-gray-900 p-8 rounded-2xl w-full max-w-sm border border-white/10">
             <h2 class="text-xl font-bold mb-4">Confirmar Entrega</h2>
             <input type="text" id="in-recebedor" placeholder="Nome do Recebedor" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none">
+            <input type="file" id="in-foto-comprovante" accept="image/*" class="w-full mb-4 text-sm">
             <button id="btnConfirmarEntrega" class="w-full bg-green-600 p-3 rounded-lg font-bold">Confirmar</button>
         </div>
     </div>
@@ -66,13 +68,12 @@
                     <tbody id="tabelaEncomendas" class="divide-y divide-white/10"></tbody>
                 </table>
             </div>
-            <div id="areaHistorico" class="bg-gray-900 p-6 rounded-2xl hidden">
+            <div id="areaHistorico" class="bg-[#A04000] p-6 rounded-2xl hidden">
                 <h2 class="text-xl font-bold mb-4">Histórico de Entregas</h2>
                 <div id="tabelaHistorico" class="text-xs"></div>
             </div>
         </div>
     </div>
-
     <script type="module" src="./logica.js"></script>
 </body>
 </html>
