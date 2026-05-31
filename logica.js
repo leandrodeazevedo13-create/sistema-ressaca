@@ -66,3 +66,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     carregarEncomendas();
 });
+// Ação para Abrir Modais
+window.abrirModal = (id) => document.getElementById(id).classList.remove('hidden');
+
+// Ação de Salvar Encomenda com Foto (Supabase Storage)
+document.getElementById('btnSalvar').addEventListener('click', async () => {
+    const file = document.getElementById('in-foto').files[0];
+    let fotoUrl = '';
+
+    if (file) {
+        const { data, error } = await supabase.storage.from('encomendas-fotos').upload(`${Date.now()}.png`, file);
+        if (!error) fotoUrl = data.path;
+    }
+
+    await supabase.from('encomendas').insert([{
+        unidade: document.getElementById('in-unid').value,
+        logradouro: document.getElementById('in-log').value,
+        empresa: document.getElementById('in-emp').value,
+        foto_url: fotoUrl,
+        status: 'pendente'
+    }]);
+    document.getElementById('modalEncomenda').classList.add('hidden');
+    carregarEncomendas();
+});
+
+// Ação de Salvar Usuário
+document.getElementById('btnSalvarUsuario').addEventListener('click', async () => {
+    const nome = document.getElementById('in-nome').value;
+    const senha = document.getElementById('in-senha').value;
+    // Lógica para salvar usuário no Supabase Auth ou tabela de usuários
+    alert(`Usuário ${nome} pronto para ser cadastrado!`);
+    document.getElementById('modalUsuario').classList.add('hidden');
+});
