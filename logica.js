@@ -3,13 +3,8 @@ import { supabase } from './supabase-client.js';
 let encomendaIdAtual = null;
 
 async function carregarEncomendas() {
-    const { data, error } = await supabase
-        .from('encomendas')
-        .select('*')
-        .eq('status', 'pendente');
-
+    const { data, error } = await supabase.from('encomendas').select('*').eq('status', 'pendente');
     if (error) { console.error(error); return; }
-
     const corpo = document.getElementById('tabelaEncomendas');
     corpo.innerHTML = data.map(item => `
         <tr class="text-xs border-b border-white/10">
@@ -23,22 +18,12 @@ async function carregarEncomendas() {
     `).join('');
 }
 
-window.prepararEntrega = (id) => {
-    encomendaIdAtual = id;
-    document.getElementById('modalEntrega').classList.remove('hidden');
-};
+window.prepararEntrega = (id) => { encomendaIdAtual = id; document.getElementById('modalEntrega').classList.remove('hidden'); };
 
 window.carregarHistorico = async () => {
     document.getElementById('areaHistorico').classList.remove('hidden');
-    const { data, error } = await supabase
-        .from('encomendas')
-        .select('*')
-        .eq('status', 'entregue')
-        .order('created_at', { ascending: false })
-        .limit(10);
-
+    const { data, error } = await supabase.from('encomendas').select('*').eq('status', 'entregue').order('created_at', { ascending: false }).limit(10);
     if (error) { console.error(error); return; }
-
     document.getElementById('tabelaHistorico').innerHTML = data.length > 0 ? data.map(item => `
         <div class="border-b border-white/10 py-2 flex justify-between">
             <span>${item.unidade} - ${item.logradouro}</span>
@@ -56,12 +41,8 @@ document.getElementById('btnSalvarEncomenda').addEventListener('click', async ()
         tipo: document.getElementById('in-tipo')?.value || "Normal",
         status: 'pendente'
     };
-
     const { error } = await supabase.from('encomendas').insert([dados]);
-    if (!error) { 
-        document.getElementById('modalEncomenda').classList.add('hidden'); 
-        carregarEncomendas(); 
-    }
+    if (!error) { document.getElementById('modalEncomenda').classList.add('hidden'); carregarEncomendas(); }
 });
 
 document.getElementById('btnConfirmarEntrega').addEventListener('click', async () => {
@@ -70,5 +51,8 @@ document.getElementById('btnConfirmarEntrega').addEventListener('click', async (
     document.getElementById('modalEntrega').classList.add('hidden');
     carregarEncomendas();
 });
+
+window.mudarCor = (c) => document.getElementById('pageBody').style.backgroundColor = c;
+window.togglePlay = () => { const icon = document.getElementById('playIcon'); icon.innerText = (icon.innerText === '▶' ? '⏸' : '▶'); };
 
 carregarEncomendas();
