@@ -75,5 +75,17 @@
         </div>
     </div>
     <script type="module" src="./logica.js"></script>
+<div id="modalEntrega" class="hidden fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-4">
+    <div class="bg-gray-900 p-8 rounded-2xl w-full max-w-sm border border-white/10">
+        <h2 class="text-xl font-bold mb-4">Confirmar Entrega</h2>
+        <input type="text" id="in-recebedor" placeholder="Nome do Recebedor" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none">
+        <p class="text-xs text-gray-400 mb-4">Ou tire uma foto do comprovante:</p>
+        <input type="file" id="in-foto-comprovante" class="w-full mb-4 text-sm">
+        <div class="flex gap-2">
+            <button id="btnConfirmarEntrega" class="flex-1 bg-green-600 p-3 rounded-lg font-bold">Confirmar</button>
+            <button onclick="document.getElementById('modalEntrega').classList.add('hidden')" class="flex-1 bg-red-600 p-3 rounded-lg">Cancelar</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
