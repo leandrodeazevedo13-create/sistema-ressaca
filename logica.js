@@ -1,25 +1,25 @@
 import { supabase } from './supabase-client.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-
-    // Relógio
-    setInterval(() => {
-        const agora = new Date();
-        document.getElementById('relogio').innerText = agora.toLocaleTimeString();
-        document.getElementById('data').innerText = agora.toLocaleDateString();
-    }, 1000);
+document.addEventListener('DOMContentLoaded', async () => {
+    
+    // Carregar Moradores para o Select
+    const { data: moradores } = await supabase.from('moradores').select('id, nome');
+    const select = document.getElementById('select-morador');
+    if (moradores) {
+        moradores.forEach(m => {
+            select.innerHTML += `<option value="${m.id}">${m.nome}</option>`;
+        });
+    }
 
     // Carregar Tabela
     async function carregarEncomendas() {
-        const { data, error } = await supabase.from('encomendas').select('*').eq('status', 'pendente');
-        if (error) console.error("Erro ao carregar:", error);
-        
+        const { data } = await supabase.from('encomendas').select('*, moradores(nome)').eq('status', 'pendente');
         const corpo = document.getElementById('tabelaEncomendas');
         if (corpo && data) {
             corpo.innerHTML = data.map(item => `
                 <tr class="text-xs">
-                    <td class="py-3 font-bold">${item.unidade}</td>
-                    <td class="py-3">${item.logradouro}</td>
+                    <td class="py-3"><img src="${item.foto_url || ''}" class="w-10 h-10 rounded-full object-cover"></td>
+                    <td class="py-3 font-bold">${item.moradores?.nome || 'N/A'}</td>
                     <td class="py-3 text-yellow-400">${item.empresa}</td>
                     <td class="py-3">${item.codigo}</td>
                     <td class="py-3"><button data-id="${item.id}" class="btn-entregar bg-green-600 px-3 py-1 rounded-lg">Entregar</button></td>
@@ -28,40 +28,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Salvar Encomenda
+    // Salvar Encomenda com Foto (Simulado)
     document.getElementById('btnSalvarEncomenda').addEventListener('click', async () => {
-        const unid = document.getElementById('in-unid').value;
-        const log = document.getElementById('in-log').value;
+        const moradorId = document.getElementById('select-morador').value;
         const emp = document.getElementById('in-emp').value;
         const cod = document.getElementById('in-cod').value;
 
-        const { error } = await supabase.from('encomendas').insert([
-            { unidade: unid, logradouro: log, empresa: emp, codigo: cod, status: 'pendente' }
-        ]);
+        await supabase.from('encomendas').insert([{ 
+            morador_id: moradorId, empresa: emp, codigo: cod, status: 'pendente' 
+        }]);
 
-        if (error) {
-            alert("Erro ao salvar: " + error.message);
-        } else {
-            document.getElementById('modalEncomenda').classList.add('hidden');
-            carregarEncomendas();
-        }
+        document.getElementById('modalEncomenda').classList.add('hidden');
+        carregarEncomendas();
     });
-
-    // Entregar
-    document.addEventListener('click', async (e) => {
-        if (e.target.classList.contains('btn-entregar')) {
-            const id = e.target.dataset.id;
-            await supabase.from('encomendas').update({ status: 'entregue' }).eq('id', id);
-            carregarEncomendas();
-        }
-    });
-
-    // Funções Globais
-    window.mudarCor = (c) => document.getElementById('pageBody').style.backgroundColor = c;
-    window.togglePlay = () => {
-        const icon = document.getElementById('playIcon');
-        icon.innerText = (icon.innerText === '▶' ? '⏸' : '▶');
-    };
 
     carregarEncomendas();
 });

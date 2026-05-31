@@ -13,15 +13,16 @@
 </head>
 <body id="pageBody" class="bg-[#A04000] min-h-screen p-8 text-white transition-colors duration-300">
 
-    <!-- Modais -->
+    <!-- Modal Nova Encomenda -->
     <div id="modalEncomenda" class="hidden fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-4">
         <div class="bg-gray-900 p-8 rounded-2xl w-full max-w-sm border border-white/10">
             <h2 class="text-xl font-bold mb-4">Nova Encomenda</h2>
-            <input type="text" id="in-unid" placeholder="Unidade" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none">
-            <input type="text" id="in-log" placeholder="Logradouro" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none">
+            <select id="select-morador" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none">
+                <option value="">Selecione o Morador</option>
+            </select>
             <input type="text" id="in-emp" placeholder="Empresa" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none">
             <input type="text" id="in-cod" placeholder="Código" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none">
-            <input type="file" id="in-foto" class="w-full p-3 mb-4 bg-gray-800 rounded-lg outline-none text-sm">
+            <input type="file" id="in-foto" accept="image/*" class="w-full p-3 mb-4 bg-gray-800 rounded-lg outline-none text-sm">
             <div class="flex gap-2">
                 <button id="btnSalvarEncomenda" class="flex-1 bg-green-600 p-3 rounded-lg font-bold">Salvar</button>
                 <button onclick="document.getElementById('modalEncomenda').classList.add('hidden')" class="flex-1 bg-red-600 p-3 rounded-lg font-bold">Cancelar</button>
@@ -30,33 +31,16 @@
     </div>
 
     <!-- UI Principal -->
-    <div class="fixed top-6 left-8 z-50">
-        <div id="relogio" class="text-3xl font-mono font-bold">00:00:00</div>
-        <div id="data" class="text-xs uppercase opacity-80">--/--/----</div>
-    </div>
-    
-    <button onclick="togglePlay()" class="fixed top-6 right-20 w-16 h-16 rounded-full bg-gray-600 z-50 flex items-center justify-center text-3xl">
-        <span id="playIcon">▶</span>
-    </button>
-
-    <div class="fixed right-6 top-6 flex flex-col gap-1.5 bg-black/20 p-2 rounded-full z-50">
-        <button onclick="mudarCor('#A04000')" class="w-5 h-5 rounded-full bg-[#A04000]"></button>
-        <button onclick="mudarCor('#374151')" class="w-5 h-5 rounded-full bg-gray-700"></button>
-        <button onclick="document.body.classList.toggle('theme-light')" class="w-5 h-5 rounded-full bg-white border border-black"></button>
-    </div>
-
     <header class="max-w-6xl mx-auto mb-8 text-center"><h1 class="text-3xl font-bold uppercase tracking-widest">ASSOCIAÇÃO MORADORES BAIRRO RESSACA 🏄‍♂️</h1></header>
 
     <div class="max-w-6xl mx-auto flex gap-6">
         <div class="w-1/3 flex flex-col gap-4">
             <button onclick="document.getElementById('modalEncomenda').classList.remove('hidden')" class="bg-blue-600 p-6 rounded-2xl font-bold">+ NOVA ENCOMENDA</button>
-            <button onclick="alert('Funcionalidade em desenvolvimento!')" class="bg-gray-600 p-6 rounded-2xl font-bold">+ CADASTRAR USUÁRIO</button>
-            <button onclick="alert('Configurações acessadas!')" class="bg-amber-600 p-4 rounded-2xl font-bold text-sm">⚙️ CONFIGURAÇÕES</button>
         </div>
         <div class="w-2/3 bg-gray-800 p-6 rounded-2xl shadow-xl">
             <table class="w-full text-left">
                 <thead class="text-gray-400 text-xs uppercase border-b border-white/10">
-                    <tr><th class="pb-3">Unid</th><th class="pb-3">Logradouro</th><th class="pb-3">Empresa</th><th class="pb-3">Cod</th><th class="pb-3">Ação</th></tr>
+                    <tr><th class="pb-3">Foto</th><th class="pb-3">Morador</th><th class="pb-3">Empresa</th><th class="pb-3">Cod</th><th class="pb-3">Ação</th></tr>
                 </thead>
                 <tbody id="tabelaEncomendas" class="divide-y divide-white/10"></tbody>
             </table>
