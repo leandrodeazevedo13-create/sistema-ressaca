@@ -98,7 +98,16 @@ document.getElementById('btnConfirmarEntrega').addEventListener('click', async (
 window.mudarCor = (c) => document.getElementById('pageBody').style.backgroundColor = c;
 window.togglePlay = () => { 
     const icon = document.getElementById('playIcon'); 
-    icon.innerText = (icon.innerText === '▶' ? '⏸' : '▶'); 
+    
+    // Se o ícone for o de play, abre a rádio e troca o ícone
+    if (icon.innerText === '▶') {
+        // Link da Rádio Eldorado (ou qualquer outra rádio online)
+        window.open('https://radio.eldorado.fm/', '_blank'); 
+        icon.innerText = '⏸';
+    } else {
+        // Apenas troca o ícone de volta
+        icon.innerText = '▶';
+    }
 };
 
 carregarEncomendas();
