@@ -27,6 +27,28 @@ async function carregarEncomendas() {
     `).join('');
 }
 
+// Função para carregar o Histórico
+window.carregarHistorico = async () => {
+    const area = document.getElementById('areaHistorico');
+    area.classList.remove('hidden'); // Mostra a área
+
+    const { data, error } = await supabase
+        .from('encomendas')
+        .select('*')
+        .eq('status', 'entregue')
+        .order('created_at', { ascending: false })
+        .limit(10); // Mostra as últimas 10
+
+    if (error) { console.error(error); return; }
+
+    const tabela = document.getElementById('tabelaHistorico');
+    tabela.innerHTML = data.length > 0 ? data.map(item => `
+        <div class="border-b border-white/10 py-2 flex justify-between">
+            <span>${item.unidade} - ${item.logradouro}</span>
+            <span class="text-green-400">Entregue para: ${item.recebedor || 'Portaria'}</span>
+        </div>
+    `).join('') : '<p>Nenhuma entrega encontrada.</p>';
+};
 // Abre o modal de confirmação de entrega
 window.prepararEntrega = (id) => {
     encomendaIdAtual = id;
