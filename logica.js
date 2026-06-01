@@ -69,10 +69,7 @@ document.getElementById('btnSalvarEncomenda').addEventListener('click', async ()
 
 document.getElementById('btnConfirmarEntrega').addEventListener('click', async () => {
     const nomeRecebedor = document.getElementById('in-recebedor')?.value || "Portaria";
-    const { error } = await supabase.from('encomendas')
-        .update({ status: 'entregue', recebedor: nomeRecebedor })
-        .eq('id', encomendaIdAtual);
-    
+    const { error } = await supabase.from('encomendas').update({ status: 'entregue', recebedor: nomeRecebedor }).eq('id', encomendaIdAtual);
     if (!error) {
         document.getElementById('modalEntrega').classList.add('hidden');
         carregarEncomendas();
@@ -80,6 +77,8 @@ document.getElementById('btnConfirmarEntrega').addEventListener('click', async (
     }
 });
 
+// Funções de sistema
+window.mudarCor = (c) => document.getElementById('pageBody').style.backgroundColor = c;
 window.togglePlay = () => { 
     const audio = document.getElementById('audioPlayer');
     const icon = document.getElementById('playIcon'); 
