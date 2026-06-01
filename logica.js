@@ -36,6 +36,7 @@ window.prepararEntrega = (id) => {
 window.carregarHistorico = async () => {
     document.getElementById('areaHistorico').classList.remove('hidden');
     const { data, error } = await supabase.from('encomendas').select('*').eq('status', 'entregue').order('created_at', { ascending: false }).limit(10);
+    
     if (error) { console.error(error); return; }
     document.getElementById('tabelaHistorico').innerHTML = data.length > 0 ? data.map(item => `
         <div class="border-b border-white/10 py-2 flex justify-between">
@@ -77,8 +78,8 @@ document.getElementById('btnConfirmarEntrega').addEventListener('click', async (
     }
 });
 
-// Funções de sistema
 window.mudarCor = (c) => document.getElementById('pageBody').style.backgroundColor = c;
+
 window.togglePlay = () => { 
     const audio = document.getElementById('audioPlayer');
     const icon = document.getElementById('playIcon'); 
