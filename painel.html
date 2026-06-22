@@ -29,16 +29,35 @@
     <!-- Modal Nova Encomenda -->
     <div id="modalEncomenda" class="hidden fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-4">
         <div class="bg-gray-900 p-8 rounded-2xl w-full max-w-md border border-white/10">
-            <h2 class="text-xl font-bold mb-4">Nova Encomenda</h2>
-            <input type="text" id="in-cod" placeholder="Código" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none text-white">
-            <input type="text" id="in-morador-nome" placeholder="Nome do Morador" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none text-white">
-            <input type="text" id="in-endereco" placeholder="Endereço" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none text-white">
-            <input type="text" id="in-empresa" placeholder="Empresa" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none text-white">
-            <input type="text" id="in-tipo" placeholder="Tipo" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none text-white">
-            <input type="file" id="in-foto" accept="image/*" capture="environment" class="w-full p-3 mb-4 bg-gray-800 rounded-lg text-sm text-gray-400">
+            <h2 class="text-xl font-bold mb-4">📦 Nova Encomenda</h2>
+            
+            <!-- Campo de Código de Barras com Scanner -->
+            <div class="mb-4">
+                <label class="text-xs text-gray-400 uppercase">Código (ou Escaneie)</label>
+                <div class="flex gap-2">
+                    <input type="text" id="in-cod" placeholder="Código/Barras" autofocus 
+                           class="flex-1 p-3 bg-gray-800 rounded-lg outline-none text-white border border-white/10 focus:border-blue-500">
+                    <button id="btnAtivarScanner" class="bg-purple-600 px-4 py-3 rounded-lg hover:bg-purple-700 transition font-bold" title="Ativar leitor de código de barras">
+                        📱
+                    </button>
+                </div>
+            </div>
+            
+            <input type="text" id="in-morador-nome" placeholder="Nome do Morador" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none text-white border border-white/10 focus:border-blue-500">
+            <input type="text" id="in-endereco" placeholder="Endereço" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none text-white border border-white/10 focus:border-blue-500">
+            <input type="text" id="in-empresa" placeholder="Empresa" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none text-white border border-white/10 focus:border-blue-500">
+            <select id="in-tipo" class="w-full p-3 mb-2 bg-gray-800 rounded-lg outline-none text-white border border-white/10 focus:border-blue-500">
+                <option value="Normal">Normal</option>
+                <option value="Frágil">Frágil</option>
+                <option value="Urgente">Urgente</option>
+                <option value="Documento">Documento</option>
+                <option value="Outro">Outro</option>
+            </select>
+            <input type="file" id="in-foto" accept="image/*" capture="environment" class="w-full p-3 mb-4 bg-gray-800 rounded-lg text-sm text-gray-400 border border-white/10">
+            
             <div class="flex gap-2">
-                <button id="btnSalvarEncomenda" class="flex-1 bg-green-600 p-3 rounded-lg font-bold hover:bg-green-700">Salvar</button>
-                <button onclick="document.getElementById('modalEncomenda').classList.add('hidden')" class="flex-1 bg-red-600 p-3 rounded-lg hover:bg-red-700">Cancelar</button>
+                <button id="btnSalvarEncomenda" class="flex-1 bg-green-600 p-3 rounded-lg font-bold hover:bg-green-700 transition">✅ Salvar</button>
+                <button onclick="document.getElementById('modalEncomenda').classList.add('hidden')" class="flex-1 bg-red-600 p-3 rounded-lg hover:bg-red-700 transition font-bold">❌ Cancelar</button>
             </div>
         </div>
     </div>
@@ -46,11 +65,12 @@
     <!-- Modal Confirmar Entrega (Layout exato do print image_5c7559.png) -->
     <div id="modalEntrega" class="hidden fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-4">
         <div class="bg-gray-950 p-8 rounded-2xl w-full max-w-sm border border-white/10 shadow-2xl">
-            <h2 class="text-xl font-bold mb-4 text-white">Confirmar Entrega</h2>
-            <input type="text" id="in-recebedor" placeholder="Nome do Recebedor" class="w-full p-3 mb-6 bg-gray-900 rounded-lg outline-none text-white border border-white/5">
+            <h2 class="text-xl font-bold mb-4 text-white">✅ Confirmar Entrega</h2>
+            <input type="text" id="in-recebedor" placeholder="Nome do Recebedor (obrigatório)" 
+                   class="w-full p-3 mb-6 bg-gray-900 rounded-lg outline-none text-white border border-white/5 focus:border-green-500 focus:border-2">
             <div class="flex gap-3">
-                <button id="btnConfirmarEntrega" class="flex-1 bg-emerald-600 p-3 rounded-lg font-bold hover:bg-emerald-700 transition">Confirmar</button>
-                <button onclick="document.getElementById('modalEntrega').classList.add('hidden')" class="flex-1 bg-red-600 p-3 rounded-lg font-bold hover:bg-red-700 transition">Voltar</button>
+                <button id="btnConfirmarEntrega" class="flex-1 bg-emerald-600 p-3 rounded-lg font-bold hover:bg-emerald-700 transition">✓ Confirmar</button>
+                <button onclick="document.getElementById('modalEntrega').classList.add('hidden')" class="flex-1 bg-red-600 p-3 rounded-lg font-bold hover:bg-red-700 transition">✕ Voltar</button>
             </div>
         </div>
     </div>

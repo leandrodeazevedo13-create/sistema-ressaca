@@ -7,31 +7,57 @@
 <body class="bg-[#A04000] h-screen flex items-center justify-center">
 
     <div class="bg-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-sm border border-white/10 text-center">
-        <h1 class="text-2xl font-bold text-white mb-6">LOGIN PORTARIA</h1>
-        <input type="password" id="senha" placeholder="Digite a senha..." 
-               class="w-full bg-gray-900 p-4 rounded-xl text-white outline-none mb-6 border border-white/10 focus:border-blue-500">
-        <button onclick="verificar()" class="w-full bg-blue-600 py-4 rounded-xl font-bold text-white hover:bg-blue-700 transition">
+        <h1 class="text-2xl font-bold text-white mb-6">🔐 LOGIN PORTARIA</h1>
+        <div class="relative mb-6">
+            <input type="password" id="senha" placeholder="Digite a senha..." 
+                   class="w-full bg-gray-900 p-4 rounded-xl text-white outline-none border border-white/10 focus:border-blue-500 focus:border-2 pr-12">
+            <button type="button" onclick="toggleSenha()" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition">
+                👁️
+            </button>
+        </div>
+        <button onclick="verificar()" class="w-full bg-blue-600 py-4 rounded-xl font-bold text-white hover:bg-blue-700 transition mb-4">
             ENTRAR NO SISTEMA
         </button>
+        <p class="text-xs text-gray-500 text-center">
+            <strong>Senhas de teste:</strong><br>
+            Portaria: 1234 | Admin: 9999 | Morador: 0000
+        </p>
     </div>
 
     <script>
         function verificar() {
-    const senha = document.getElementById('senha').value;
+            const senha = document.getElementById('senha').value.trim();
+            const senhas = {
+                '1234': 'painel.html',      // Portaria
+                '9999': 'painelgestorADM.html',  // Administrador
+                '0000': 'telausuario.html'  // Morador
+            };
 
-    if (senha === '1234') { // Senha da Portaria
-        window.location.href = 'painel.html';
-    } 
-    else if (senha === '9999') { // Senha do Administrador/Gestor
-        window.location.href = 'painelgestorADM.html';
-    }
-    else if (senha === '0000') { // Senha do Morador (Exemplo)
-        window.location.href = 'telausuario.html';
-    }
-    else {
-        alert('Senha incorreta!');
-    }
-}
+            if (senhas[senha]) {
+                window.location.href = senhas[senha];
+            } else {
+                document.getElementById('senha').value = '';
+                alert('❌ Senha incorreta!');
+                document.getElementById('senha').focus();
+            }
+        }
+
+        // Pressionar Enter para enviar
+        document.addEventListener('DOMContentLoaded', () => {
+            const senhaInput = document.getElementById('senha');
+            if (senhaInput) {
+                senhaInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') verificar();
+                });
+            }
+        });
+
+        // Ocultar senha (mostrar/esconder)
+        function toggleSenha() {
+            const input = document.getElementById('senha');
+            const tipo = input.type === 'password' ? 'text' : 'password';
+            input.type = tipo;
+        }
     </script>
 </body>
 </html>
